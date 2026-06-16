@@ -3,7 +3,7 @@
 
 ## 1. Project Overview
 
-Students will build a hotel/accommodation booking web app **inspired by Booking.com's layout, UX flow, and visual language**, using React (via Vite) and Tailwind CSS, with multi-page navigation handled by React Router.
+You will build a hotel/accommodation booking web app **inspired by Booking.com's layout, UX flow, and visual language**, using React (via Vite) and Tailwind CSS, with multi-page navigation handled by React Router.
 
 The goal is not to "memorize React theory" it's to get hands-on reps with the exact skills they'll use on real client/product work: turning a real, complex, production-grade interface into clean, reusable components, wiring up routing between pages, and making it actually work on a phone screen as well as a laptop.
 
@@ -16,7 +16,6 @@ By the end of this project, students should be comfortable with:
 - Breaking a complex real-world UI into reusable, well-named React components
 - React Router: `<Routes>`, `<Route>`, `<Link>` / `<NavLink>`, dynamic route params (`/property/:id`), `useNavigate`
 - Tailwind CSS: responsive utility classes, custom theme colors/fonts, hover/focus states
-- Basic state management for UI interactions (search inputs, filters, mobile menu) with `useState` / `useContext`
 - Working with local mock data (JSON) instead of a real backend
 - Deploying a Vite + React app to production (Vercel or Netlify)
 
@@ -39,22 +38,13 @@ By the end of this project, students should be comfortable with:
 - "Trending destinations" card grid
 - Deals / offers carousel
 - Footer with link columns
-
-### `/search` Search Results
-- Filter sidebar (price range, star rating, amenities) — collapses into a drawer/modal on mobile
 - Sortable list of property cards (image, name, location, rating, price)
-- Results count + sort dropdown
-- Each card links to `/property/:id`
-
-### `/property/:id` Property Details
 - Image gallery (grid + lightbox or carousel)
 - Title, location, star rating, review score
 - Amenities list
 - Room types table (name, capacity, price, "Reserve" button)
 - Sticky booking widget on desktop, inline on mobile
 - Reviews section
-
-### Stretch goal (optional)
 - `/login` and `/signup` UI only, form layout matching the reference style
 
 ## 5. Design & Responsiveness Requirements
