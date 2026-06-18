@@ -1,92 +1,89 @@
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import {
+  Bed,
+  Plane,
+  Car,
+  Landmark,
+  CircleHelp,
+  // Taxi,
+} from "lucide-react";
 
-export default function Header() {
+export default function Navbar() {
+  return (
+    <nav className="bg-[#003B95] pb-14 text-white">
+      <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6">
+        
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          
+          <h1 className="text-xl font-bold sm:text-3xl">Reservation
+          </h1>
 
-const [open,setOpen]=useState(false);
+          <div className="flex flex-wrap items-center gap-3 text-sm sm:gap-5">
+            <button className="font-semibold">USD</button>
 
-return (
+            <button className="text-3xl"></button>
 
-<header className="bg-[#003580] sticky top-0 z-50">
+            <button>
+              <CircleHelp size={22} />
+            </button>
 
-<div className="max-w-7xl mx-auto">
+            <button className="font-semibold">
+              List your property
+            </button>
 
-<div className="flex justify-between items-center p-5">
+            <button className="rounded bg-white px-4 py-2 font-semibold text-[#003B95]">
+              Register
+            </button>
 
-<Link
-to="/"
-className="text-white text-3xl font-bold"
->
-StayRwanda
-</Link>
+            <button className="rounded bg-white px-4 py-2 font-semibold text-[#003B95]">
+              Sign in
+            </button>
+          </div>
+        </div>
 
-<nav className="hidden md:flex gap-8">
+        {/* Bottom Menu */}
+        <div className="mt-7 flex flex-wrap items-center gap-3 text-sm sm:gap-5">
 
-<Link className="text-white">
-Hotels
-</Link>
+          <NavItem icon={<Bed />} text="Stays" active />
 
-<Link className="text-white">
-Deals
-</Link>
+          <NavItem icon={<Plane />} text="Flights" />
 
-<Link className="text-white">
-Explore
-</Link>
+          <NavItem icon={<Car />} text="Car rental" />
 
-<Link className="text-white">
-About
-</Link>
+          <NavItem icon={<Landmark />} text="Attractions" />
 
-</nav>
+          <button className="flex items-center gap-2 rounded-full border border-white px-4 py-2">
+            {/* <Taxi size={22} /> */}
+            Airport taxis
+          </button>
 
-<div className="hidden md:flex gap-3">
+        </div>
 
-<button
-className="bg-white px-5 py-2 rounded"
->
-Sign In
-</button>
-
-<button
-className="bg-[#febb02] px-5 py-2 rounded"
->
-Register
-</button>
-
-</div>
-
-<button
-onClick={()=>setOpen(!open)}
-className="md:hidden text-white text-3xl"
->
-
-☰
-
-</button>
-
-</div>
-
-{
-open && (
-
-<div className="bg-white p-5 space-y-3">
-
-<p>Hotels</p>
-<p>Deals</p>
-<p>Explore</p>
-<p>About</p>
-
-</div>
-
-)
-
+        <div className="mt-12">
+          <h2 className="text-3xl font-bold sm:text-4xl">Find your next stay</h2>
+          <p className="mt-3 text-lg sm:text-xl">
+            Search deals on hotels, homes, and much more...
+          </p>
+        </div>
+      </div>
+    </nav>
+  );
 }
 
-</div>
-
-</header>
-
-);
-
+function NavItem({ icon, text, active }) {
+  return (
+    <button
+      className={`
+        flex items-center gap-2 rounded-full px-4 py-2
+        transition
+        ${
+          active
+            ? "border border-white"
+            : "hover:bg-blue-800"
+        }
+      `}
+    >
+      {icon}
+      <span>{text}</span>
+    </button>
+  );
 }

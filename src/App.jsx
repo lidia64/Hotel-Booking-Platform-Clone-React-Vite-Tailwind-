@@ -1,11 +1,10 @@
+import { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import Home from "./pages/Home";
 
-import './App.css'
-
-function App() {
+export default function App() {
   return (
-    <>
-    </>
-  )
+    <Home />
+  );
 }
-
-export default App
