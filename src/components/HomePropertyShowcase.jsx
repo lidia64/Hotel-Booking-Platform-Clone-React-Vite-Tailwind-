@@ -172,12 +172,14 @@ const lovedHomes = [
 
 export default function HomePropertyShowcase() {
   const [favorites, setFavorites] = useState({});
+  const [activeSavedTrip, setActiveSavedTrip] = useState("");
 
   function toggleFavorite(id) {
     setFavorites((current) => ({
       ...current,
-      [id]: !current[id],
+      [id]: true,
     }));
+    setActiveSavedTrip(id);
   }
 
   return (
@@ -188,6 +190,7 @@ export default function HomePropertyShowcase() {
           subtitle="From castles and villas to boats and igloos, we have it all"
           items={uniqueProperties}
           favorites={favorites}
+          activeSavedTrip={activeSavedTrip}
           onToggleFavorite={toggleFavorite}
         />
 
@@ -196,6 +199,7 @@ export default function HomePropertyShowcase() {
           subtitle="Save on stays for June 19 - June 21"
           items={weekendDeals}
           favorites={favorites}
+          activeSavedTrip={activeSavedTrip}
           onToggleFavorite={toggleFavorite}
           className="mt-10"
           showDealInfo
@@ -206,6 +210,7 @@ export default function HomePropertyShowcase() {
           action="Discover homes"
           items={lovedHomes}
           favorites={favorites}
+          activeSavedTrip={activeSavedTrip}
           onToggleFavorite={toggleFavorite}
           className="mt-10"
         />
@@ -219,6 +224,7 @@ export default function HomePropertyShowcase() {
 
 function PropertySection({
   action,
+  activeSavedTrip,
   className = "",
   favorites,
   items,
@@ -247,6 +253,7 @@ function PropertySection({
             <PropertyCard
               key={property.id}
               isFavorite={Boolean(favorites[property.id])}
+              isSavedMessageOpen={activeSavedTrip === property.id}
               property={property}
               showDealInfo={showDealInfo}
               onToggleFavorite={() => onToggleFavorite(property.id)}
@@ -266,7 +273,13 @@ function PropertySection({
   );
 }
 
-function PropertyCard({ isFavorite, onToggleFavorite, property, showDealInfo }) {
+function PropertyCard({
+  isFavorite,
+  isSavedMessageOpen,
+  onToggleFavorite,
+  property,
+  showDealInfo,
+}) {
   return (
     <article className="overflow-hidden rounded-md border border-neutral-200 bg-white shadow-sm">
       <div className="relative">
@@ -287,6 +300,27 @@ function PropertyCard({ isFavorite, onToggleFavorite, property, showDealInfo }) 
             className={isFavorite ? "fill-red-600 text-red-600" : "text-neutral-800"}
           />
         </button>
+
+        {isSavedMessageOpen && (
+          <div className="absolute right-2 top-14 z-20 w-[calc(100%-1rem)] rounded-md bg-white text-sm text-neutral-950 shadow-xl sm:w-64">
+            <p className="border-b border-neutral-200 px-4 py-3">
+              Saved to:{" "}
+              <span className="font-bold text-[#006ce4]">My next trip</span>
+            </p>
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="flex items-center gap-2">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#006ce4]">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#006ce4]" />
+                </span>
+                My next trip
+              </span>
+              <span className="flex flex-col text-neutral-500">
+                <span className="leading-3">▲</span>
+                <span className="leading-3">▼</span>
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex min-h-44 flex-col p-3">

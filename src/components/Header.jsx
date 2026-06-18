@@ -6,6 +6,7 @@ import {
   CircleHelp,
   // Taxi,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   return (
@@ -44,10 +45,13 @@ export default function Navbar() {
         <div className="mt-7 flex flex-wrap items-center gap-3 text-sm sm:gap-5">
 
           <NavItem icon={<Bed />} text="Stays" active />
+           <Link to="/taxes">
+               <NavItem icon={<Plane />} text="Taxes" />
+           </Link>
 
-          <NavItem icon={<Plane />} text="Flights" />
-
-          <NavItem icon={<Car />} text="Car rental" />
+          <Link to="/car-rental">
+            <NavItem icon={<Car />} text="Car rental" />
+          </Link>
 
           <NavItem icon={<Landmark />} text="Attractions" />
 

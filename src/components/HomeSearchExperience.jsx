@@ -76,6 +76,14 @@ export default function HomeSearchExperience() {
     checkIn: "2026-06-20",
     checkOut: "2026-06-21",
   });
+  const [isGuestsOpen, setIsGuestsOpen] = useState(false);
+  const [guests, setGuests] = useState({
+    adults: 2,
+    children: 3,
+    rooms: 2,
+    childAges: ["1 year old", "8 years old", "15 years old"],
+  });
+  const [guestDraft, setGuestDraft] = useState(guests);
 
   function updateDate(event) {
     const { name, value } = event.target;
@@ -83,6 +91,42 @@ export default function HomeSearchExperience() {
       ...current,
       [name]: value,
     }));
+  }
+
+  function openGuestsEditor() {
+    setGuestDraft(guests);
+    setIsGuestsOpen((current) => !current);
+  }
+
+  function updateGuestCount(field, direction) {
+    setGuestDraft((current) => {
+      const minimum = field === "adults" || field === "rooms" ? 1 : 0;
+      const nextValue = Math.max(minimum, current[field] + direction);
+      const next = { ...current, [field]: nextValue };
+
+      if (field === "children") {
+        next.childAges = Array.from(
+          { length: nextValue },
+          (_, index) => current.childAges[index] || "1 year old",
+        );
+      }
+
+      return next;
+    });
+  }
+
+  function updateChildAge(index, value) {
+    setGuestDraft((current) => ({
+      ...current,
+      childAges: current.childAges.map((age, ageIndex) =>
+        ageIndex === index ? value : age,
+      ),
+    }));
+  }
+
+  function saveGuests() {
+    setGuests(guestDraft);
+    setIsGuestsOpen(false);
   }
 
   return (
@@ -129,10 +173,30 @@ export default function HomeSearchExperience() {
             />
           </div>
 
-          <SearchField icon={<UserRound size={24} />} className="lg:border-r-4">
-            <span className="font-semibold">2 adults - 3 children - 2 rooms</span>
-            <ChevronDown size={20} className="ml-auto" />
-          </SearchField>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={openGuestsEditor}
+              className="flex min-h-16 w-full items-center gap-3 border-[#febb02] bg-white px-5 text-left text-neutral-950 lg:border-r-4"
+            >
+              <span className="text-neutral-600">
+                <UserRound size={24} />
+              </span>
+              <span className="font-semibold">
+                {guests.adults} adults - {guests.children} children - {guests.rooms} rooms
+              </span>
+              <ChevronDown size={20} className="ml-auto" />
+            </button>
+
+            {isGuestsOpen && (
+              <GuestsEditor
+                guests={guestDraft}
+                onChangeAge={updateChildAge}
+                onDone={saveGuests}
+                onUpdateCount={updateGuestCount}
+              />
+            )}
+          </div>
 
           <button
             type="submit"
@@ -253,6 +317,142 @@ function SearchField({ children, className = "", icon }) {
       <span className="text-neutral-600">{icon}</span>
       {children}
     </button>
+  );
+}
+
+function GuestsEditor({ guests, onChangeAge, onDone, onUpdateCount }) {
+  const childAgeOptions = [
+    "Under 1 year old",
+    "1 year old",
+    "2 years old",
+    "3 years old",
+    "4 years old",
+    "5 years old",
+    "6 years old",
+    "7 years old",
+    "8 years old",
+    "9 years old",
+    "10 years old",
+    "11 years old",
+    "12 years old",
+    "13 years old",
+    "14 years old",
+    "15 years old",
+    "16 years old",
+    "17 years old",
+  ];
+
+  return (
+    <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 rounded-md border border-neutral-200 bg-white p-5 text-sm text-neutral-950 shadow-xl sm:left-auto sm:right-0 sm:w-80">
+      <CounterRow
+        label="Adults"
+        value={guests.adults}
+        onDecrease={() => onUpdateCount("adults", -1)}
+        onIncrease={() => onUpdateCount("adults", 1)}
+      />
+      <CounterRow
+        label="Children"
+        value={guests.children}
+        onDecrease={() => onUpdateCount("children", -1)}
+        onIncrease={() => onUpdateCount("children", 1)}
+      />
+
+      {guests.children > 0 && (
+        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {guests.childAges.map((age, index) => (
+            <select
+              key={`${index}-${age}`}
+              value={age}
+              onChange={(event) => onChangeAge(index, event.target.value)}
+              className="min-h-10 rounded border border-neutral-400 px-3 text-sm outline-none"
+            >
+              {childAgeOptions.map((option) => (
+                <option key={option}>{option}</option>
+              ))}
+            </select>
+          ))}
+        </div>
+      )}
+
+      <p className="mt-3 leading-5 text-neutral-700">
+        To find a place to stay that fits your entire group along with correct
+        prices, we need to know how old your children will be at check-out
+      </p>
+
+      <CounterRow
+        label="Rooms"
+        value={guests.rooms}
+        onDecrease={() => onUpdateCount("rooms", -1)}
+        onIncrease={() => onUpdateCount("rooms", 1)}
+        className="mt-4"
+      />
+
+      <div className="mt-4 border-t border-neutral-200 pt-4">
+        <ToggleRow label="Traveling for work?" />
+        <ToggleRow label="Traveling with pets?" className="mt-4" />
+        <p className="mt-2 text-xs text-neutral-700">
+          Assistance animals aren't considered pets.
+        </p>
+        <a href="#" className="mt-1 block text-xs text-[#006ce4]">
+          Read more about traveling with assistance animals
+        </a>
+      </div>
+
+      <button
+        type="button"
+        onClick={onDone}
+        className="mt-4 w-full rounded border border-[#006ce4] px-4 py-2 text-sm font-semibold text-[#006ce4] hover:bg-blue-50"
+      >
+        Done
+      </button>
+    </div>
+  );
+}
+
+function CounterRow({ className = "", label, onDecrease, onIncrease, value }) {
+  return (
+    <div className={`flex items-center justify-between gap-4 ${className}`}>
+      <span>{label}</span>
+      <div className="grid h-10 w-32 grid-cols-3 items-center rounded border border-neutral-400 text-center">
+        <button
+          type="button"
+          onClick={onDecrease}
+          className="text-lg text-[#006ce4]"
+          aria-label={`Decrease ${label}`}
+        >
+          -
+        </button>
+        <span>{value}</span>
+        <button
+          type="button"
+          onClick={onIncrease}
+          className="text-lg text-[#006ce4]"
+          aria-label={`Increase ${label}`}
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ToggleRow({ className = "", label }) {
+  const [enabled, setEnabled] = useState(false);
+
+  return (
+    <div className={`flex items-center justify-between gap-4 ${className}`}>
+      <span>{label}</span>
+      <button
+        type="button"
+        aria-pressed={enabled}
+        onClick={() => setEnabled((current) => !current)}
+        className={`flex h-6 w-10 items-center rounded-full px-1 transition ${
+          enabled ? "justify-end bg-[#006ce4]" : "justify-start bg-neutral-400"
+        }`}
+      >
+        <span className="h-4 w-4 rounded-full bg-white" />
+      </button>
+    </div>
   );
 }
 
