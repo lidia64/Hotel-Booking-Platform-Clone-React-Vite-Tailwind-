@@ -53,13 +53,14 @@ export default function Navbar() {
             <NavItem icon={<Car />} text="Car rental" />
           </Link>
 
-          <NavItem icon={<Landmark />} text="Attractions" />
+          <Link to="/attractions">
+            <NavItem icon={<Landmark />} text="Attractions" />
+          </Link>
+          <Link to="/airport-taxes">
+            <NavItem icon={<Car/>} text="Airport taxes" />
+          </Link> 
 
-          <button className="flex items-center gap-2 rounded-full border border-white px-4 py-2">
-            {/* <Taxi size={22} /> */}
-            Airport taxis
-          </button>
-
+         
         </div>
 
         <div className="mt-12">

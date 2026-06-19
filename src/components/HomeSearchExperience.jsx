@@ -6,7 +6,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import heroImage from "../assets/hero.jpg";
 
 const destinations = [
@@ -84,6 +84,21 @@ export default function HomeSearchExperience() {
     childAges: ["1 year old", "8 years old", "15 years old"],
   });
   const [guestDraft, setGuestDraft] = useState(guests);
+  const guestsRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (guestsRef.current && !guestsRef.current.contains(event.target)) {
+        setIsGuestsOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   function updateDate(event) {
     const { name, value } = event.target;
@@ -173,10 +188,9 @@ export default function HomeSearchExperience() {
             />
           </div>
 
-          <div className="relative">
+          <div className="relative" ref={guestsRef}>
             <button
               type="button"
-              onClick={openGuestsEditor}
               className="flex min-h-16 w-full items-center gap-3 border-[#febb02] bg-white px-5 text-left text-neutral-950 lg:border-r-4"
             >
               <span className="text-neutral-600">
@@ -185,7 +199,18 @@ export default function HomeSearchExperience() {
               <span className="font-semibold">
                 {guests.adults} adults - {guests.children} children - {guests.rooms} rooms
               </span>
-              <ChevronDown size={20} className="ml-auto" />
+            </button>
+
+            <button
+              type="button"
+              onClick={openGuestsEditor}
+              aria-label="Toggle guests"
+              className="absolute inset-y-0 right-3 flex items-center text-neutral-600 hover:bg-neutral-100 rounded"
+            >
+              <ChevronDown
+                size={20}
+                className={`transition-transform ${isGuestsOpen ? "rotate-180" : ""}`}
+              />
             </button>
 
             {isGuestsOpen && (
@@ -343,38 +368,46 @@ function GuestsEditor({ guests, onChangeAge, onDone, onUpdateCount }) {
   ];
 
   return (
-    <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 rounded-md border border-neutral-200 bg-white p-5 text-sm text-neutral-950 shadow-xl sm:left-auto sm:right-0 sm:w-80">
-      <CounterRow
-        label="Adults"
-        value={guests.adults}
-        onDecrease={() => onUpdateCount("adults", -1)}
-        onIncrease={() => onUpdateCount("adults", 1)}
-      />
-      <CounterRow
-        label="Children"
-        value={guests.children}
-        onDecrease={() => onUpdateCount("children", -1)}
-        onIncrease={() => onUpdateCount("children", 1)}
-      />
+    <div className="absolute right-0 top-[calc(100%+8px)] z-30 w-[360px] rounded-md border border-neutral-200 bg-white p-6 text-sm text-neutral-950 shadow-xl">
+      <div className="space-y-4">
+        <CounterRow
+          label="Adults"
+          value={guests.adults}
+          onDecrease={() => onUpdateCount("adults", -1)}
+          onIncrease={() => onUpdateCount("adults", 1)}
+        />
+        <CounterRow
+          label="Children"
+          value={guests.children}
+          onDecrease={() => onUpdateCount("children", -1)}
+          onIncrease={() => onUpdateCount("children", 1)}
+        />
+      </div>
 
       {guests.children > 0 && (
-        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="mt-4 flex flex-wrap gap-2">
           {guests.childAges.map((age, index) => (
-            <select
-              key={`${index}-${age}`}
-              value={age}
-              onChange={(event) => onChangeAge(index, event.target.value)}
-              className="min-h-10 rounded border border-neutral-400 px-3 text-sm outline-none"
-            >
-              {childAgeOptions.map((option) => (
-                <option key={option}>{option}</option>
-              ))}
-            </select>
+            <div key={index} className="relative w-[calc(50%-4px)] min-w-[120px] flex-grow">
+              <select
+                value={age}
+                onChange={(event) => onChangeAge(index, event.target.value)}
+                className="h-10 w-full appearance-none rounded border border-neutral-400 bg-white pl-3 pr-8 text-sm outline-none focus:border-[#006ce4]"
+              >
+                {childAgeOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-neutral-700">
+                <ChevronDown size={16} />
+              </div>
+            </div>
           ))}
         </div>
       )}
 
-      <p className="mt-3 leading-5 text-neutral-700">
+      <p className="mt-4 text-xs leading-normal text-neutral-700">
         To find a place to stay that fits your entire group along with correct
         prices, we need to know how old your children will be at check-out
       </p>
@@ -387,21 +420,22 @@ function GuestsEditor({ guests, onChangeAge, onDone, onUpdateCount }) {
         className="mt-4"
       />
 
-      <div className="mt-4 border-t border-neutral-200 pt-4">
+      <div className="mt-4 border-t border-neutral-100 pt-4 space-y-4">
         <ToggleRow label="Traveling for work?" />
-        <ToggleRow label="Traveling with pets?" className="mt-4" />
-        <p className="mt-2 text-xs text-neutral-700">
-          Assistance animals aren't considered pets.
-        </p>
-        <a href="#" className="mt-1 block text-xs text-[#006ce4]">
-          Read more about traveling with assistance animals
-        </a>
+        <ToggleRow label="Traveling with pets?" />
+        
+        <div className="text-xs text-neutral-600">
+          <p>Assistance animals aren't considered pets.</p>
+          <a href="#" className="mt-1 inline-block text-[#006ce4] hover:underline">
+            Read more about traveling with assistance animals
+          </a>
+        </div>
       </div>
 
       <button
         type="button"
         onClick={onDone}
-        className="mt-4 w-full rounded border border-[#006ce4] px-4 py-2 text-sm font-semibold text-[#006ce4] hover:bg-blue-50"
+        className="mt-5 h-11 w-full rounded border border-[#006ce4] px-4 text-sm font-semibold text-[#006ce4] transition hover:bg-blue-50/50"
       >
         Done
       </button>
@@ -412,21 +446,21 @@ function GuestsEditor({ guests, onChangeAge, onDone, onUpdateCount }) {
 function CounterRow({ className = "", label, onDecrease, onIncrease, value }) {
   return (
     <div className={`flex items-center justify-between gap-4 ${className}`}>
-      <span>{label}</span>
-      <div className="grid h-10 w-32 grid-cols-3 items-center rounded border border-neutral-400 text-center">
+      <span className="font-medium">{label}</span>
+      <div className="grid h-10 w-32 grid-cols-3 items-center rounded border border-neutral-400 text-center bg-white">
         <button
           type="button"
           onClick={onDecrease}
-          className="text-lg text-[#006ce4]"
+          className="text-xl text-[#006ce4] hover:bg-neutral-50 h-full flex items-center justify-center transition rounded-l"
           aria-label={`Decrease ${label}`}
         >
-          -
+          −
         </button>
-        <span>{value}</span>
+        <span className="font-medium text-neutral-900">{value}</span>
         <button
           type="button"
           onClick={onIncrease}
-          className="text-lg text-[#006ce4]"
+          className="text-xl text-[#006ce4] hover:bg-neutral-50 h-full flex items-center justify-center transition rounded-r"
           aria-label={`Increase ${label}`}
         >
           +
@@ -441,16 +475,20 @@ function ToggleRow({ className = "", label }) {
 
   return (
     <div className={`flex items-center justify-between gap-4 ${className}`}>
-      <span>{label}</span>
+      <span className="text-neutral-800">{label}</span>
       <button
         type="button"
         aria-pressed={enabled}
         onClick={() => setEnabled((current) => !current)}
-        className={`flex h-6 w-10 items-center rounded-full px-1 transition ${
-          enabled ? "justify-end bg-[#006ce4]" : "justify-start bg-neutral-400"
+        className={`flex h-6 w-11 items-center rounded-full px-0.5 transition-colors duration-200 ease-in-out ${
+          enabled ? "bg-[#006ce4]" : "bg-neutral-400"
         }`}
       >
-        <span className="h-4 w-4 rounded-full bg-white" />
+        <span
+          className={`h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out ${
+            enabled ? "translate-x-5" : "translate-x-0"
+          }`}
+        />
       </button>
     </div>
   );
@@ -497,4 +535,3 @@ function PropertyTypeCard({ property }) {
     </article>
   );
 }
-

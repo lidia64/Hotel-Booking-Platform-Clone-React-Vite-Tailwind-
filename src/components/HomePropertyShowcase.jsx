@@ -175,11 +175,27 @@ export default function HomePropertyShowcase() {
   const [activeSavedTrip, setActiveSavedTrip] = useState("");
 
   function toggleFavorite(id) {
-    setFavorites((current) => ({
-      ...current,
-      [id]: true,
-    }));
-    setActiveSavedTrip(id);
+    const isCurrentlyFavorite = Boolean(favorites[id]);
+
+    setFavorites((current) => {
+      const next = { ...current };
+
+      if (isCurrentlyFavorite) {
+        delete next[id];
+      } else {
+        next[id] = true;
+      }
+
+      return next;
+    });
+
+    setActiveSavedTrip((current) => {
+      if (current === id) {
+        return "";
+      }
+
+      return isCurrentlyFavorite ? "" : id;
+    });
   }
 
   return (
