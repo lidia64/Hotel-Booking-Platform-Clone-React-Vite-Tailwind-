@@ -57,7 +57,7 @@ export default function Navbar() {
             <NavItem icon={<Landmark />} text="Attractions" />
           </Link>
           <Link to="/airport-taxes">
-            <NavItem icon={<Car/>} text="Airport taxes" />
+            <NavItem icon={<Car />} text="Airport taxes" />
           </Link> 
 
          
